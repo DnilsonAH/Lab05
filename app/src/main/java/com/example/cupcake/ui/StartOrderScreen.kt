@@ -49,6 +49,7 @@ import com.example.cupcake.ui.theme.CupcakeTheme
 @Composable
 fun StartOrderScreen(
     quantityOptions: List<Pair<Int, Int>>,
+    onNextButtonClicked: (Int) -> Unit,  // Modificación: Se agrega este parámetro de función.
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -83,7 +84,7 @@ fun StartOrderScreen(
             quantityOptions.forEach { item ->
                 SelectQuantityButton(
                     labelResourceId = item.first,
-                    onClick = {}
+                    onClick = { onNextButtonClicked(item.second) }  // Modificación: Se llama la función con la cantidad seleccionada.
                 )
             }
         }
@@ -116,7 +117,8 @@ fun StartOrderPreview() {
             quantityOptions = DataSource.quantityOptions,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(dimensionResource(R.dimen.padding_medium))
+                .padding(dimensionResource(R.dimen.padding_medium)),
+            onNextButtonClicked = TODO()
         )
     }
 }
