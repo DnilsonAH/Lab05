@@ -15,6 +15,8 @@
  */
 package com.example.cupcake
 
+import android.content.Intent
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -35,6 +37,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -108,7 +111,7 @@ fun CupcakeApp(
                     quantityOptions = DataSource.quantityOptions,
                     onNextButtonClicked = {
                         viewModel.setQuantity(it) // Actualizamos la cantidad en el ViewModel
-                        navController.navigate(CupcakeScreen.Flavor.name) // Navegamos a la pantalla de selección de sabor
+                        navController.navigate(CupcakeScreen.Flavor.name) // Navegamos ad la pantalla de selección de sabor
                     },
                     modifier = Modifier
                         .fillMaxSize()
@@ -148,13 +151,23 @@ fun CupcakeApp(
             }
 
             composable(route = CupcakeScreen.Summary.name) {
+                val context = LocalContext.current
                 OrderSummaryScreen(
                     orderUiState = uiState,
                     onCancelButtonClicked = {
                         cancelOrderAndNavigateToStart(viewModel, navController) // Cancelamos el pedido y volvemos a la pantalla de inicio
                     },
                     onSendButtonClicked = { subject: String, summary: String ->
-                        // Implementación futura para enviar el resumen del pedido
+                        //Enviar datos de pedido
+                        val sendIntent: Intent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_SUBJECT, subject)
+                            putExtra(Intent.EXTRA_TEXT, "$summary\n\nPrecio total: ${uiState.price}")
+                            type = "text/plain"
+                        }
+
+                        val shareIntent = Intent.createChooser(sendIntent, null)
+                        context.startActivity(shareIntent)
                     },
                     modifier = Modifier.fillMaxHeight(),
                 )
